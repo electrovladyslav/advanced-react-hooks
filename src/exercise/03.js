@@ -12,13 +12,23 @@ const CountProvider = ({children}) => {
   return <CountContext.Provider children={children} value={value}/>
 }
 
+function useCount() {
+  const ctx = useContext(CountContext);
+  if (!ctx) {
+    throw new Error(
+      'useCount may only be used from within a (child of a) <CountProvider>',
+    );
+  }
+  return ctx;
+}
+
 function CountDisplay() {
-  const [count] = React.useContext(CountContext)
+  const [count] = useCount()
   return <div>{`The current count is ${count}`}</div>
 }
 
 function Counter() {
-  const [, setCount] = useContext(CountContext)
+  const [, setCount] = useCount()
   const increment = () => setCount(c => c + 1)
   return <button onClick={increment}>Increment count</button>
 }
@@ -26,10 +36,10 @@ function Counter() {
 function App() {
   return (
     <div>
-      <CountProvider>
+      {/*<CountProvider>*/}
         <CountDisplay />
         <Counter />
-      </CountProvider>
+      {/*</CountProvider>*/}
     </div>
   )
 }
